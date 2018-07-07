@@ -26,8 +26,6 @@ router.get('/:id', (req, res) => {
 // create
 router.post('/', (req, res, next) => {
 
-    // TODO validate
-
     // Event.find('_id', null, {sort: {'_id': -1}, limit: 1}, function (err, lastEvent) {
 
     Event.findOne({}, '_id').sort({'_id': 'desc'}).limit(1).exec((err, lastEvent) => {
@@ -45,8 +43,6 @@ router.post('/', (req, res, next) => {
 
 // update
 router.put('/:id', (req, res, next) => {
-
-    // TODO validate
 
     Event.findByIdAndUpdate(req.params.id, req.body, {}, function (err, updatedEvent) {
         if (err) return next(err);
