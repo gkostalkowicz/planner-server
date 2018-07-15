@@ -5,7 +5,12 @@ const router = express.Router();
 
 // get all
 router.get('/', (req, res, next) => {
-    Event.find((err, events) => {
+    if (!req.get('X-Username')) {
+        res.status(400).json({error: 'username_missing'});
+        return;
+    }
+
+    Event.find({username: req.get('X-Username')}, '-username', (err, events) => {
         if (err) return next(err);
         res.json(events.map(event => toObject(event)));
     });
@@ -13,7 +18,7 @@ router.get('/', (req, res, next) => {
 
 // get one
 router.get('/:id', (req, res) => {
-    Event.findById(req.params.id, (err, event) => {
+    Event.findById(req.params.id, '-username', (err, event) => {
         if (err) return next(err);
         if (!event) {
             res.status(404).json({error: 'no_such_id'});
@@ -25,6 +30,10 @@ router.get('/:id', (req, res) => {
 
 // create
 router.post('/', (req, res, next) => {
+    if (!req.get('X-Username')) {
+        res.status(400).json({error: 'username_missing'});
+        return;
+    }
 
     // Event.find('_id', null, {sort: {'_id': -1}, limit: 1}, function (err, lastEvent) {
 
@@ -33,6 +42,7 @@ router.post('/', (req, res, next) => {
 
         const event = req.body;
         event._id = lastEvent ? lastEvent._id + 1 : 0;
+        event.username = req.get('X-Username');
 
         Event.create(event, (err, createdEvent) => {
             if (err) return next(err);
@@ -43,8 +53,15 @@ router.post('/', (req, res, next) => {
 
 // update
 router.put('/:id', (req, res, next) => {
+    if (!req.get('X-Username')) {
+        res.status(400).json({error: 'username_missing'});
+        return;
+    }
 
-    Event.findByIdAndUpdate(req.params.id, req.body, {}, function (err, updatedEvent) {
+    const event = req.body;
+    event.username = req.get('X-Username');
+
+    Event.findByIdAndUpdate(req.params.id, event, {}, function (err, updatedEvent) {
         if (err) return next(err);
         if (!updatedEvent) {
             res.status(400).json({error: 'no_such_id'});
