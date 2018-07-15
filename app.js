@@ -1,39 +1,33 @@
-var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
+var createError = require('http-errors');
 var logger = require('morgan');
-var cors = require('cors')
-var eventRouter = require('./event/eventController');
+var cors = require('cors');
 var mongoose = require('mongoose');
+var eventRouter = require('./event/eventController');
 
 
 const app = express();
-
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 
+// ==============================================================
+// routes and middleware
+
 // middleware
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors())
-
+app.use(cors());
 
 // routers
 app.use('/events', eventRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
 });
-
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -47,7 +41,9 @@ app.use(function (err, req, res, next) {
 });
 
 
-// connect to MongoDB
+// ==============================================================
+// MongoDB
+
 const mongoUrl = 'mongodb://127.0.0.1/planner';
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoUrl)
@@ -55,7 +51,7 @@ mongoose.connect(mongoUrl)
         console.log('MongoDB connection error:', error);
         process.exit(0);
     });
-const db = mongoose.connection;
 
 
+console.log('Server started');
 module.exports = app;
