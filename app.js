@@ -44,7 +44,7 @@ app.use(function (err, req, res, next) {
 // ==============================================================
 // MongoDB
 
-const mongoUrl = 'mongodb://127.0.0.1/planner';
+const mongoUrl = process.env.MONGODB_URI;
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoUrl)
     .catch((error) => {
