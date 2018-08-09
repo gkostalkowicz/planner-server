@@ -53,5 +53,5 @@ mongoose.connect(mongoUrl)
     });
 
 
-console.log('Server started');
+console.log('Planner Server started');
 module.exports = app;
